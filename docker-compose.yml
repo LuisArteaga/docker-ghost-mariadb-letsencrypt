@@ -20,17 +20,20 @@ services:
      image: ghost:latest
      restart: unless-stopped
      volumes:
-       - ${GHOST_CORE}:/var/www/html
-       - ${GHOST_CONTENT}:/var/www/html/ghost/content
+       - ${GHOST_APPS}:/var/www/ghost/content/apps
+       - ${GHOST_DATA}:/var/www/ghost/content/data
+       - ${GHOST_IMAGES}:/var/www/ghost/content/images
+       - ${GHOST_THEMES}:/var/www/ghost/content/themes
      environment:
        GHOST_DB_HOST: ${CONTAINER_DB_NAME}:3306
        GHOST_DB_NAME: ${MYSQL_DATABASE}
        GHOST_DB_USER: ${MYSQL_USER}
        GHOST_DB_PASSWORD: ${MYSQL_PASSWORD}
-       GHOST_TABLE_PREFIX: ${GHOST_TABLE_PREFIX}
        VIRTUAL_HOST: ${DOMAINS}
        LETSENCRYPT_HOST: ${DOMAINS}
-       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL} 
+       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+       url: ${SITE_URL}
+       NODE_ENV: ${STATUS}
 
 networks:
     default:
