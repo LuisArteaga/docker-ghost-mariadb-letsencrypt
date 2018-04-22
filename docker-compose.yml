@@ -37,6 +37,6 @@ services:
        LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
 
 networks:
-    default:
-       external:
-         name: ${NETWORK}
+  default:
+    external:
+      name: ${NETWORK}
