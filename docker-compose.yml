@@ -3,7 +3,7 @@ version: '3'
 services:
    db:
      container_name: ${CONTAINER_DB_NAME}
-     image: mariadb:latest
+     image: mariadb:10.2.14
      restart: unless-stopped
      volumes:
         - ${DB_PATH}:/var/lib/mysql
@@ -17,7 +17,7 @@ services:
      depends_on:
        - db
      container_name: ${CONTAINER_GHOST_NAME}
-     image: ghost:latest
+     image: ghost:1.22.2
      restart: unless-stopped
      volumes:
        - ${GHOST_APPS}:/var/www/ghost/content/apps
