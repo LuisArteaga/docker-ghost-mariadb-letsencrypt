@@ -1,10 +1,10 @@
-version: '3'
+version: '2'
 
 services:
+
    db:
      container_name: ${CONTAINER_DB_NAME}
      image: mariadb:10.2.14
-     restart: unless-stopped
      volumes:
         - ${DB_PATH}:/var/lib/mysql
      environment:
@@ -12,13 +12,11 @@ services:
        MYSQL_DATABASE: ${MYSQL_DATABASE}
        MYSQL_USER: ${MYSQL_USER}
        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+     restart: unless-stopped
 
    ghost:
-     depends_on:
-       - db
      container_name: ${CONTAINER_GHOST_NAME}
      image: ghost:1.22.2
-     restart: unless-stopped
      volumes:
        - ${GHOST_APPS}:/var/www/ghost/content/apps
        - ${GHOST_DATA}:/var/www/ghost/content/data
@@ -27,14 +25,17 @@ services:
      environment:
        url: ${SITE_URL}
        database__client: ${DATABASE_CLIENT}
-       database__connection__host: ${CONTAINER_DB_NAME}:3306
+       database__connection__host: ${CONTAINER_DB_NAME}
        database__connection__database: ${MYSQL_DATABASE}
        database__connection__user: ${MYSQL_USER}
        database__connection__password: ${MYSQL_PASSWORD}
-       NODE_ENV: ${STATUS}
        VIRTUAL_HOST: ${DOMAINS}
+       VIRTUAL_PORT: ${PORT}
        LETSENCRYPT_HOST: ${DOMAINS}
        LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+     depends_on:
+       - db
+     restart: unless-stopped
 
 networks:
   default:
