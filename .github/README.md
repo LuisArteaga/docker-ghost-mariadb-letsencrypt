@@ -20,44 +20,50 @@ git clone https://github.com/LuisArteaga/docker-ghost-mariadb-letsencrypt.git
 Or just copy the content of `docker-compose.yml` and the `Dockerfile`, as of below:
 
 ```bash
-version: '3'
+version: "2"
 
 services:
-   db:
-     container_name: ${CONTAINER_DB_NAME}
-     image: mariadb:latest
-     restart: unless-stopped
-     volumes:
-        - ${DB_PATH}:/var/lib/mysql
-     environment:
-       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-       MYSQL_DATABASE: ${MYSQL_DATABASE}
-       MYSQL_USER: ${MYSQL_USER}
-       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
-   ghost:
-     depends_on:
-       - db
-     container_name: ${CONTAINER_GHOST_NAME}
-     image: ghost:latest
-     restart: unless-stopped
-     volumes:
-       - ${GHOST_CORE}:/var/www/html
-       - ${GHOST_CONTENT}:/var/www/html/ghost/content
-     environment:
-       GHOST_DB_HOST: ${CONTAINER_DB_NAME}:3306
-       GHOST_DB_NAME: ${MYSQL_DATABASE}
-       GHOST_DB_USER: ${MYSQL_USER}
-       GHOST_DB_PASSWORD: ${MYSQL_PASSWORD}
-       GHOST_TABLE_PREFIX: ${GHOST_TABLE_PREFIX}
-       VIRTUAL_HOST: ${DOMAINS}
-       LETSENCRYPT_HOST: ${DOMAINS}
-       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL} 
+  ghost:
+    container_name: ${CONTAINER_GHOST_NAME}
+    image: ghost:1.22.2
+    volumes:
+      - ${GHOST_APPS}:/var/lib/ghost/content/apps
+      - ${GHOST_DATA}:/var/lib/ghost/content/data
+      - ${GHOST_IMAGES}:/var/lib/ghost/content/images
+      - ${GHOST_THEMES}:/var/lib/ghost/content/themes
+    environment:
+      - url=${GHOST_URL}
+      - database__client=${DB_CLIENT}
+      - database__connection__host=${CONTAINER_DB_NAME}
+      - database__connection__user=${DB_USER}
+      - database__connection__password=${DB_PASSWORD}
+      - database__connection__database=${DB_NAME}
+      - NODE_ENV=${STATUS}
+      - VIRTUAL_HOST=${DOMAINS}
+      - VIRTUAL_PORT=${PORT}
+      - LETSENCRYPT_HOST=${DOMAINS}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    container_name: ${CONTAINER_DB_NAME}
+    image: mariadb:10.2.14
+    volumes:
+      - ${DB_PATH}:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    restart: unless-stopped
 
 networks:
-    default:
-       external:
-         name: ${NETWORK}
+  default:
+    external:
+      name: ${NETWORK}
 ```
 
 2. Make a copy of our .env.sample and rename it to .env:
@@ -82,15 +88,18 @@ NETWORK=webproxy
 CONTAINER_DB_NAME=db
 
 # Path to store your database
-DB_PATH=/path/to/your/local/database/folder
+DB_PATH=/path-to-your/mysql
+
+# Database Client
+DB_CLIENT=mysql
 
 # Root password for your database
-MYSQL_ROOT_PASSWORD=root_password
+DB_ROOT_PASSWORD=rootpassword
 
 # Database name, user and password for your ghost
-MYSQL_DATABASE=database_name
-MYSQL_USER=user_name
-MYSQL_PASSWORD=user_password
+DB_NAME=databasename
+DB_USER=username
+DB_PASSWORD=userpassword
 
 #
 # Ghost Container configuration
@@ -98,17 +107,25 @@ MYSQL_PASSWORD=user_password
 CONTAINER_GHOST_NAME=ghost
 
 # Path to store your ghost files
-GHOST_CORE=/path/to/your/ghost/core/files
-GHOST_CONTENT=/path/to/your/ghost/content
+GHOST_APPS=/path-to-your/ghost/content/apps
+GHOST_DATA=/path-to-your/ghost/content/data
+GHOST_IMAGES=/path-to-your/ghost/content/images
+GHOST_THEMES=/path-to-your/ghost/content/themes
 
-# Table prefix
-GHOST_TABLE_PREFIX=ghost_
+# Your port for ghost
+PORT=2368
 
 # Your domain (or domains)
 DOMAINS=domain.com,www.domain.com
 
 # Your email for Let's Encrypt register
 LETSENCRYPT_EMAIL=your_email@domain.com
+
+# Your complete Site-URL (non-www or www)
+GHOST_URL=https://www.domain.com
+
+# Your Status of your environment (development or production)
+STATUS=production
 ```
 
 >This container must use a network connected to your webproxy or the same network of your webproxy.
