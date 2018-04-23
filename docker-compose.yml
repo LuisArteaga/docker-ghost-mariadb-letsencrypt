@@ -6,10 +6,10 @@ services:
     container_name: ${CONTAINER_GHOST_NAME}
     image: ghost:1.22.2
     volumes:
-      - ${GHOST_APPS}:/var/www/ghost/content/apps
-      - ${GHOST_DATA}:/var/www/ghost/content/data
-      - ${GHOST_IMAGES}:/var/www/ghost/content/images
-      - ${GHOST_THEMES}:/var/www/ghost/content/themes
+      - ${GHOST_APPS}:/var/lib/ghost/content/apps
+      - ${GHOST_DATA}:/var/lib/ghost/content/data
+      - ${GHOST_IMAGES}:/var/lib/ghost/content/images
+      - ${GHOST_THEMES}:/var/lib/ghost/content/themes
     environment:
       - url=${GHOST_URL}
       - database__client=${DB_CLIENT}
