@@ -154,4 +154,5 @@ Please be advised that if are running docker on azure servers you must mount you
 1. [@jwilder](https://github.com/jwilder/nginx-proxy)
 2. [@jwilder](https://github.com/jwilder/docker-gen)
 3. [@JrCs](https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion)
-4. [@evertramos](https://github.com/evertramos/docker-compose-letsencrypt-nginx-proxy-companion).
+4. [@evertramos](https://github.com/evertramos/docker-compose-letsencrypt-nginx-proxy-companion)
+5. [@autoize](https://autoize.com/docker-compose-file-ghost/)
