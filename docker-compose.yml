@@ -1,43 +1,45 @@
-version: '2'
+version: "2"
 
 services:
 
-   db:
-     container_name: ${CONTAINER_DB_NAME}
-     image: mariadb:10.2.14
-     volumes:
-        - ${DB_PATH}:/var/lib/mysql
-     environment:
-       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-       MYSQL_DATABASE: ${MYSQL_DATABASE}
-       MYSQL_USER: ${MYSQL_USER}
-       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-     restart: unless-stopped
+  ghost:
+    container_name: ${CONTAINER_GHOST_NAME}
+    image: ghost:1.22.2
+    volumes:
+      - ${GHOST_APPS}:/var/www/ghost/content/apps
+      - ${GHOST_DATA}:/var/www/ghost/content/data
+      - ${GHOST_IMAGES}:/var/www/ghost/content/images
+      - ${GHOST_THEMES}:/var/www/ghost/content/themes
+    environment:
+      - url=${GHOST_URL}
+      - database__client=${DB_CLIENT}
+      - database__connection__host=${CONTAINER_DB_NAME}
+      - database__connection__user=${DB_USER}
+      - database__connection__password=${DB_PASSWORD}
+      - database__connection__database=${DB_NAME}
+      - NODE_ENV=${STATUS}
+      - VIRTUAL_HOST=${DOMAINS}
+      - VIRTUAL_PORT=${PORT}
+      - LETSENCRYPT_HOST=${DOMAINS}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    depends_on:
+      - db
+    restart: unless-stopped
 
-   ghost:
-     container_name: ${CONTAINER_GHOST_NAME}
-     image: ghost:1.22.2
-     volumes:
-       - ${GHOST_APPS}:/var/www/ghost/content/apps
-       - ${GHOST_DATA}:/var/www/ghost/content/data
-       - ${GHOST_IMAGES}:/var/www/ghost/content/images
-       - ${GHOST_THEMES}:/var/www/ghost/content/themes
-     environment:
-       url: ${SITE_URL}
-       database__client: ${DATABASE_CLIENT}
-       database__connection__host: ${CONTAINER_DB_NAME}
-       database__connection__database: ${MYSQL_DATABASE}
-       database__connection__user: ${MYSQL_USER}
-       database__connection__password: ${MYSQL_PASSWORD}
-       VIRTUAL_HOST: ${DOMAINS}
-       VIRTUAL_PORT: ${PORT}
-       LETSENCRYPT_HOST: ${DOMAINS}
-       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
-     depends_on:
-       - db
-     restart: unless-stopped
+  db:
+    container_name: ${CONTAINER_DB_NAME}
+    image: mariadb:10.2.14
+    volumes:
+      - ${DB_PATH}:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    restart: unless-stopped
 
 networks:
   default:
     external:
       name: ${NETWORK}
+                       
